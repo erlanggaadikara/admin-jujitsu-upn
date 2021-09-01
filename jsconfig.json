@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+      "target": "ES6",
+      "module": "commonjs",
+      "allowSyntheticDefaultImports": true,
+      "baseUrl": "src",
+      "paths": {
+        "src/*": ["./src/*"]
+      }
+    },
+    "scripts": {
+        "lint": "npx eslint --max-warnings=0 --ext .tsx,.ts,.js,.jsx src/ --fix"
+    },
+    "include": ["src"]
+  }

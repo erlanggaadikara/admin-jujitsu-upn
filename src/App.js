@@ -1,25 +1,42 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import { createTheme, ThemeProvider } from "@material-ui/core/styles";
+import { Router } from "@reach/router";
+import { LocalizationProvider } from "@material-ui/lab";
+import AdapterDateFns from "@material-ui/lab/AdapterDateFns";
+import Login from "page/Login";
+import Dashboard from "page/Dashboard";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ThemeProvider theme={theme}>
+      <LocalizationProvider dateAdapter={AdapterDateFns}>
+        <Router>
+          <Login path="/" />
+          <Dashboard path="/Dashboard" />
+        </Router>
+      </LocalizationProvider>
+    </ThemeProvider>
   );
 }
+
+const theme = createTheme({
+  breakpoints: {
+    values: {
+      mobile: 0,
+      tablet: 640,
+      laptop: 1024,
+      desktop: 1280,
+    },
+  },
+  palette: {
+    primary: {
+      main: "#fcba03",
+      light: "#e8e8e8",
+    },
+    bg: {
+      main: "#FFFFF",
+    },
+  },
+});
 
 export default App;
