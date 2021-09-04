@@ -20,6 +20,11 @@ export const menu = [
     component: lazy(() => import("page/Dashboard/Home")),
   },
   {
+    name: "Member",
+    path: "/Member",
+    component: lazy(() => import("page/Dashboard/Member")),
+  },
+  {
     name: "Kepengurusan",
     path: "/Kepengurusan",
     component: lazy(() => import("page/Dashboard/Kepengurusan")),
