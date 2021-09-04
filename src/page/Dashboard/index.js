@@ -1,13 +1,21 @@
 import { observer, useLocalObservable } from "mobx-react-lite";
 import { action } from "mobx";
-import { Drawer, Box, IconButton } from "@material-ui/core";
+import {
+  Drawer,
+  Box,
+  IconButton,
+  CssBaseline,
+  Toolbar,
+  useMediaQuery,
+} from "@material-ui/core";
 import MenuIcon from "@material-ui/icons/Menu";
 import { Router } from "@reach/router";
 import ListMenu, { menu } from "./ListMenu";
 import { createElement } from "react";
-import Home from "page/Dashboard/Home";
+import Container from "component/Container";
 
 export default observer(() => {
+  const isMobile = useMediaQuery("(max-width:640px)");
   const meta = useLocalObservable(() => ({
     openDrawer: false,
     container: window !== undefined ? () => window.document.body : undefined,
@@ -15,6 +23,7 @@ export default observer(() => {
 
   return (
     <Box sx={{ display: "flex" }}>
+      <CssBaseline />
       <Box
         sx={{
           position: "fixed",
@@ -22,15 +31,17 @@ export default observer(() => {
           ml: { tablet: "240px" },
         }}
       >
-        <IconButton
-          color="inherit"
-          aria-label="open drawer"
-          edge="start"
-          onClick={action(() => (meta.openDrawer = true))}
-          sx={{ mr: 2, display: { tablet: "none" } }}
-        >
-          <MenuIcon />
-        </IconButton>
+        <Toolbar>
+          <IconButton
+            color="inherit"
+            aria-label="open drawer"
+            edge="start"
+            onClick={action(() => (meta.openDrawer = true))}
+            sx={{ mr: 2, display: { tablet: "none" } }}
+          >
+            <MenuIcon />
+          </IconButton>
+        </Toolbar>
       </Box>
       <Box
         component="nav"
@@ -39,7 +50,7 @@ export default observer(() => {
         <Drawer
           container={meta.container}
           variant="temporary"
-          open={meta.openDrawern}
+          open={meta.openDrawer}
           onClose={action(() => (meta.openDrawer = false))}
           ModalProps={{
             keepMounted: true,
@@ -49,7 +60,7 @@ export default observer(() => {
             "& .MuiDrawer-paper": { boxSizing: "border-box", width: 240 },
           }}
         >
-          <ListMenu />
+          <ListMenu closeDrawer={action(() => (meta.openDrawer = false))} />
         </Drawer>
         <Drawer
           variant="permanent"
@@ -59,13 +70,28 @@ export default observer(() => {
           }}
           open
         >
-          <ListMenu />
+          <ListMenu closeDrawer={() => null} />
         </Drawer>
       </Box>
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-        <Router>
-          <Home path="/" />
-        </Router>
+        {isMobile && <Toolbar />}
+        <Container>
+          <Router>
+            {menu.map((item) => {
+              if (item.component) {
+                return createElement(item.component, { path: item.path }, null);
+              } else if (item.child) {
+                return item.child.map((val) =>
+                  createElement(
+                    val.component,
+                    { path: item.path + val.path },
+                    null
+                  )
+                );
+              }
+            })}
+          </Router>
+        </Container>
       </Box>
     </Box>
   );

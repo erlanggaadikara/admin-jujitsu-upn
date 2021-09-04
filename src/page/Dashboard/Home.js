@@ -1,6 +1,6 @@
 import { observer } from "mobx-react-lite";
-import { Box } from "@material-ui/core";
+import { Box, Toolbar } from "@material-ui/core";
 
 export default observer(() => {
-  return <Box>Tes</Box>;
+  return <Box>tes</Box>;
 });

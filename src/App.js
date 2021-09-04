@@ -12,7 +12,7 @@ function App() {
       <LocalizationProvider dateAdapter={AdapterDateFns}>
         <Router>
           <Login path="/" />
-          <Dashboard path="/Dashboard" />
+          <Dashboard path="/Dashboard/*" />
         </Router>
       </LocalizationProvider>
     </ThemeProvider>

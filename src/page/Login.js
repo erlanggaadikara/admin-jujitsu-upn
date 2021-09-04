@@ -20,7 +20,7 @@ export default observer(() => {
     validationSchema,
     onSubmit: (value) => {
       console.log(value);
-      navigate("/Dashboard");
+      navigate("/Dashboard", { replace: true });
     },
   });
 
