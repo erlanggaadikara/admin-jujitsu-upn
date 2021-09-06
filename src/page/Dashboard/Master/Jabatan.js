@@ -12,9 +12,10 @@ import {
   MenuItem,
 } from "@material-ui/core";
 import { DataGrid } from "@mui/x-data-grid";
-import { Get } from "utils/api";
+import { Get, Post } from "utils/api";
 import { useEffect, useState, useRef } from "react";
 import { useFormik } from "formik";
+import { toast } from "component/Show/Toast";
 import * as yup from "yup";
 import Spinner from "component/Spinner";
 
@@ -165,6 +166,17 @@ const FormField = observer(({ data, formRef }) => {
 
   const createNew = async (value) => {
     console.log("new", value);
+    const cn = await Post("/jabatan/insert", {
+      ...value,
+      nama_jabatan: value.jabatan_nama,
+    });
+
+    console.log("new", cn);
+    if (cn) {
+      toast.show("Berhasil", "Input Data Berhasil", "SUCCESS");
+    } else {
+      toast.show("Gagal", "Input Data Gagal", "ERROR");
+    }
   };
 
   const updateData = async (value) => {

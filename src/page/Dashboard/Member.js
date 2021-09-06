@@ -92,8 +92,7 @@ export default observer(() => {
             field: "member_status_alumni",
             headerName: "Status Alumni",
             minWidth: 300,
-            valueGetter: (params) =>
-              params.value == 0 ? "Belum Alumni" : "Alumni",
+            valueGetter: (params) => (params.value == 0 ? "" : "Alumni"),
           },
           {
             field: "member_status_pelatih",
@@ -199,6 +198,7 @@ export default observer(() => {
         <DataGrid
           rows={rows}
           columns={columns}
+          loading={meta.loading}
           //   onCellClick={action(
           //     (params) => (meta.value = { type: "update", ...params.row })
           //   )}
