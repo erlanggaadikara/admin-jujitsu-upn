@@ -5,12 +5,8 @@ import {
   Typography,
   TextField,
   Button,
-  FormHelperText,
-  Select,
-  InputLabel,
-  FormControl,
-  MenuItem,
   IconButton,
+  useMediaQuery,
 } from "@material-ui/core";
 import { DataGrid } from "@mui/x-data-grid";
 import { Get, Post } from "utils/api";
@@ -23,6 +19,7 @@ import { LoadingButton } from "@material-ui/lab";
 import { Save, ArrowBack, Add, Delete } from "@material-ui/icons";
 
 export default observer(() => {
+  const isMobile = useMediaQuery("(max-width:640px)");
   const meta = useLocalObservable(() => ({
     value: "",
     load: true,
@@ -93,23 +90,23 @@ export default observer(() => {
               variant="contained"
               color="success"
               size="medium"
-              sx={{ my: 2, px: 4, mr: 1 }}
+              sx={{ my: 2, px: { laptop: 4 }, mr: 1 }}
               startIcon={<Save />}
               onClick={() => form.current && form.current.click()}
             >
-              Simpan
+              {isMobile ? "" : "Simpan"}
             </LoadingButton>
             {meta.value.type !== "new" && (
               <Button
                 variant="contained"
                 color="error"
                 size="medium"
-                sx={{ my: 2, px: 4, mr: 1 }}
+                sx={{ my: 2, px: { laptop: 4 }, mr: 1 }}
                 type="button"
                 startIcon={<Delete />}
                 onClick={() => del.current && del.current.click()}
               >
-                Hapus
+                {isMobile ? "" : "Hapus"}
               </Button>
             )}
           </Box>
@@ -126,7 +123,7 @@ export default observer(() => {
               variant="contained"
               color="success"
               size="medium"
-              sx={{ my: 2, px: 4, mr: 1 }}
+              sx={{ my: 2, px: { laptop: 4 }, mr: 1 }}
               startIcon={<Add />}
               onClick={action(
                 () =>
@@ -137,7 +134,7 @@ export default observer(() => {
                   })
               )}
             >
-              Baru
+              {isMobile ? "" : "Baru"}
             </Button>
           </Box>
         )}

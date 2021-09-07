@@ -11,6 +11,7 @@ import {
   FormControl,
   MenuItem,
   IconButton,
+  useMediaQuery,
 } from "@material-ui/core";
 import { DataGrid } from "@mui/x-data-grid";
 import { Get, Post } from "utils/api";
@@ -23,6 +24,7 @@ import { LoadingButton } from "@material-ui/lab";
 import { Save, ArrowBack, Add, Delete } from "@material-ui/icons";
 
 export default observer(() => {
+  const isMobile = useMediaQuery("(max-width:640px)");
   const meta = useLocalObservable(() => ({
     value: "",
     load: true,
@@ -107,7 +109,7 @@ export default observer(() => {
               startIcon={<Save />}
               onClick={() => form.current && form.current.click()}
             >
-              Simpan
+              {isMobile ? "" : "Simpan"}
             </LoadingButton>
             {meta.value.type !== "new" && (
               <Button
@@ -119,7 +121,7 @@ export default observer(() => {
                 startIcon={<Delete />}
                 onClick={() => del.current && del.current.click()}
               >
-                Hapus
+                {isMobile ? "" : "Hapus"}
               </Button>
             )}
           </Box>
@@ -147,7 +149,7 @@ export default observer(() => {
                   })
               )}
             >
-              Baru
+              {isMobile ? "" : "Baru"}
             </Button>
           </Box>
         )}
