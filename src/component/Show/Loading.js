@@ -29,6 +29,8 @@ class LoadingModel {
 
 export const loading = new LoadingModel();
 
+window.loading = loading;
+
 export default observer(() => {
   return (
     <Modal

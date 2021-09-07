@@ -1,9 +1,8 @@
 import React, { useContext, useEffect } from "react";
 import { observer } from "mobx-react-lite";
 import { observable, action, makeObservable } from "mobx";
-import { Snackbar, Typography, IconButton, Box } from "@material-ui/core";
+import { Snackbar, Typography, IconButton, Box, Card } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
-import { AddBoxRounded } from "@material-ui/icons";
 
 class ToastModel {
   open = false;
@@ -42,15 +41,17 @@ class ToastModel {
 
 export const toast = new ToastModel();
 
+window.toast = toast;
+
 export default observer(() => {
   return (
     <Snackbar
-      anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      anchorOrigin={{ vertical: "top", horizontal: "center" }}
       open={toast.open}
       onClose={toast.close}
       autoHideDuration={10000}
     >
-      <div
+      <Card
         style={{
           display: "flex",
           flexDirection: "column",
@@ -58,7 +59,6 @@ export default observer(() => {
           minWidth: 300,
           backgroundColor: toast.color,
           color: "white",
-          borderRadius: 10,
         }}
       >
         <Box
@@ -79,10 +79,10 @@ export default observer(() => {
             <CloseIcon fontSize="small" />
           </IconButton>
         </Box>
-        <Typography variant="h6" sx={{ display: "inline-block" }}>
+        <Typography variant="body1" sx={{ display: "inline-block" }}>
           {toast.message}
         </Typography>
-      </div>
+      </Card>
     </Snackbar>
   );
 });

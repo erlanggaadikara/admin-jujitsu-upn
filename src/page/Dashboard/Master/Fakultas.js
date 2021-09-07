@@ -1,5 +1,5 @@
 import { observer, useLocalObservable } from "mobx-react-lite";
-import { action, observable, runInAction } from "mobx";
+import { action, runInAction } from "mobx";
 import {
   Box,
   Typography,
@@ -13,8 +13,6 @@ import { Get, Post } from "utils/api";
 import { useEffect, useState, useRef } from "react";
 import { useFormik } from "formik";
 import * as yup from "yup";
-import Spinner from "component/Spinner";
-import { toast } from "component/Show/Toast";
 import { LoadingButton } from "@material-ui/lab";
 import { Save, ArrowBack, Add, Delete } from "@material-ui/icons";
 
@@ -22,6 +20,7 @@ export default observer(() => {
   const isMobile = useMediaQuery("(max-width:640px)");
   const meta = useLocalObservable(() => ({
     value: "",
+    saving: false,
     load: true,
   }));
   const [columns, setColumns] = useState([]);
@@ -51,10 +50,9 @@ export default observer(() => {
       }
     };
 
-    fetch();
+    const interval = setInterval(fetch, 3000);
+    return () => clearInterval(interval);
   }, []);
-
-  if (meta.load) return <Spinner />;
 
   return (
     <Box sx={{ height: "90vh", display: "flex", flexDirection: "column" }}>
@@ -92,11 +90,16 @@ export default observer(() => {
               size="medium"
               sx={{ my: 2, px: { laptop: 4 }, mr: 1 }}
               startIcon={<Save />}
-              onClick={() => form.current && form.current.click()}
+              loading={global.saving}
+              loadingPosition="start"
+              onClick={action(() => {
+                global.saving = true;
+                form.current && form.current.click();
+              })}
             >
               {isMobile ? "" : "Simpan"}
             </LoadingButton>
-            {meta.value.type !== "new" && (
+            {/* {meta.value.type !== "new" && (
               <Button
                 variant="contained"
                 color="error"
@@ -104,11 +107,16 @@ export default observer(() => {
                 sx={{ my: 2, px: { laptop: 4 }, mr: 1 }}
                 type="button"
                 startIcon={<Delete />}
-                onClick={() => del.current && del.current.click()}
+                onClick={() => {
+                  del.current && del.current.click();
+                  runInAction(() => {
+                    meta.value = "";
+                  });
+                }}
               >
                 {isMobile ? "" : "Hapus"}
               </Button>
-            )}
+            )} */}
           </Box>
         ) : (
           <Box
@@ -142,6 +150,7 @@ export default observer(() => {
       {!meta.value ? (
         <DataGrid
           rows={rows}
+          loading={meta.load}
           columns={columns}
           onCellClick={action(
             (params) => (meta.value = { type: "update", ...params.row })
@@ -173,9 +182,9 @@ const FormField = observer(({ data, formRef }) => {
     const cn = await Post("/fakultas/insert", value);
 
     if (cn) {
-      toast.show("Berhasil", "Input Data Berhasil", "SUCCESS");
+      window.toast.show("Berhasil", "Input Data Berhasil", "SUCCESS");
     } else {
-      toast.show("Gagal", "Input Data Gagal", "ERROR");
+      window.toast.show("Gagal", "Input Data Gagal", "ERROR");
     }
   };
 
@@ -183,9 +192,9 @@ const FormField = observer(({ data, formRef }) => {
     const cn = await Post("/fakultas/update", { id: data.id, ...value });
 
     if (cn) {
-      toast.show("Berhasil", "Update Data Berhasil", "SUCCESS");
+      window.toast.show("Berhasil", "Update Data Berhasil", "SUCCESS");
     } else {
-      toast.show("Gagal", "Update Data Gagal", "ERROR");
+      window.toast.show("Gagal", "Update Data Gagal", "ERROR");
     }
   };
 
@@ -195,9 +204,9 @@ const FormField = observer(({ data, formRef }) => {
     });
 
     if (cn) {
-      toast.show("Berhasil", "Hapus Data Berhasil", "SUCCESS");
+      window.toast.show("Berhasil", "Hapus Data Berhasil", "SUCCESS");
     } else {
-      toast.show("Gagal", "Hapus Data Gagal", "ERROR");
+      window.toast.show("Gagal", "Hapus Data Gagal", "ERROR");
     }
   };
 
@@ -207,6 +216,7 @@ const FormField = observer(({ data, formRef }) => {
     } else if (type == "update") {
       await updateData(value);
     }
+    global.saving = false;
   };
 
   return (

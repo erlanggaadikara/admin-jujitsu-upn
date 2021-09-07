@@ -8,6 +8,10 @@ import Alert from "component/Show/Alert";
 import Toast from "component/Show/Toast";
 import Login from "page/Login";
 import Dashboard from "page/Dashboard";
+import "utils/global";
+import "component/Show/Loading";
+import "component/Show/Alert";
+import "component/Show/Toast";
 
 function App() {
   return (

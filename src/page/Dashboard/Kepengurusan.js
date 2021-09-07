@@ -76,10 +76,9 @@ export default observer(() => {
       }
     };
 
-    fetch();
+    const interval = setInterval(fetch, 3000);
+    return () => clearInterval(interval);
   }, []);
-
-  if (meta.load) return <Spinner />;
 
   return (
     <Box sx={{ height: "90vh", display: "flex", flexDirection: "column" }}>
@@ -117,7 +116,12 @@ export default observer(() => {
               size="medium"
               sx={{ my: 2, px: 4, mr: 1 }}
               startIcon={<Save />}
-              onClick={() => form.current && form.current.click()}
+              loading={global.saving}
+              loadingPosition="start"
+              onClick={() => {
+                global.saving = true;
+                form.current && form.current.click();
+              }}
             >
               {isMobile ? "" : "Simpan"}
             </LoadingButton>
@@ -154,9 +158,6 @@ export default observer(() => {
                 () =>
                   (meta.value = {
                     type: "new",
-                    member_id: 0,
-                    jabatan_id: 0,
-                    kepengurusan_tahun: 0,
                   })
               )}
             >
@@ -169,6 +170,7 @@ export default observer(() => {
         <DataGrid
           rows={rows}
           columns={columns}
+          loading={meta.load}
           onCellClick={action(
             (params) => (meta.value = { type: "update", ...params.row })
           )}
@@ -248,6 +250,7 @@ const FormField = observer(({ data, formRef }) => {
     } else if (type == "update") {
       await updateData(value);
     }
+    global.saving = false;
   };
 
   useEffect(() => {

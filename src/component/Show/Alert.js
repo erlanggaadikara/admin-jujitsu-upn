@@ -31,6 +31,7 @@ class AlertModel {
 }
 
 export const alert = new AlertModel();
+window.alert = alert;
 
 export default observer(() => {
   return (
