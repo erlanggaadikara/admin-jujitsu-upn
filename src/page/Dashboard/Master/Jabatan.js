@@ -10,6 +10,7 @@ import {
   InputLabel,
   FormControl,
   MenuItem,
+  IconButton,
 } from "@material-ui/core";
 import { DataGrid } from "@mui/x-data-grid";
 import { Get, Post } from "utils/api";
@@ -18,6 +19,8 @@ import { useFormik } from "formik";
 import { toast } from "component/Show/Toast";
 import * as yup from "yup";
 import Spinner from "component/Spinner";
+import { LoadingButton } from "@material-ui/lab";
+import { Save, ArrowBack, Add, Delete } from "@material-ui/icons";
 
 export default observer(() => {
   const meta = useLocalObservable(() => ({
@@ -28,6 +31,7 @@ export default observer(() => {
   const [rows, setRows] = useState([]);
 
   const form = useRef(null);
+  const del = useRef(null);
 
   useEffect(() => {
     const fetch = async () => {
@@ -37,14 +41,7 @@ export default observer(() => {
           {
             field: "jabatan_nama",
             headerName: "Nama",
-            minWidth: 300,
-          },
-          {
-            field: "jabatan_status",
-            headerName: "Status",
-            minWidth: 150,
-            valueGetter: (params) =>
-              params.value == 1 ? "Aktif" : "Non Aktif",
+            minWidth: 400,
           },
         ];
 
@@ -72,8 +69,16 @@ export default observer(() => {
           alignItems: "center",
         }}
       >
+        {meta.value && (
+          <IconButton
+            aria-label="back"
+            onClick={action(() => (meta.value = ""))}
+          >
+            <ArrowBack />
+          </IconButton>
+        )}
         <Typography variant="h5" sx={{ my: 2 }}>
-          jabatan
+          Jabatan
         </Typography>
         {meta.value ? (
           <Box
@@ -84,25 +89,29 @@ export default observer(() => {
               justifyContent: "flex-end",
             }}
           >
-            <Button
+            <LoadingButton
               variant="contained"
               color="success"
               size="medium"
               sx={{ my: 2, px: 4, mr: 1 }}
+              startIcon={<Save />}
               onClick={() => form.current && form.current.click()}
             >
               Simpan
-            </Button>
-            <Button
-              variant="contained"
-              color="error"
-              size="medium"
-              sx={{ my: 2, px: 4, mr: 1 }}
-              type="button"
-              onClick={action(() => (meta.value = ""))}
-            >
-              Cancel
-            </Button>
+            </LoadingButton>
+            {meta.value.type !== "new" && (
+              <Button
+                variant="contained"
+                color="error"
+                size="medium"
+                sx={{ my: 2, px: 4, mr: 1 }}
+                type="button"
+                startIcon={<Delete />}
+                onClick={() => del.current && del.current.click()}
+              >
+                Hapus
+              </Button>
+            )}
           </Box>
         ) : (
           <Box
@@ -118,6 +127,7 @@ export default observer(() => {
               color="success"
               size="medium"
               sx={{ my: 2, px: 4, mr: 1 }}
+              startIcon={<Add />}
               onClick={action(
                 () =>
                   (meta.value = {
@@ -141,7 +151,7 @@ export default observer(() => {
           )}
         />
       ) : (
-        <FormField data={meta.value} formRef={form} />
+        <FormField data={meta.value} formRef={{ form, del }} />
       )}
     </Box>
   );
@@ -149,14 +159,12 @@ export default observer(() => {
 
 const FormField = observer(({ data, formRef }) => {
   const validationSchema = yup.object({
-    jabatan_nama: yup.string().required("Mohon diisi"),
-    jabatan_status: yup.number().required("Mohon diisi"),
+    nama_jabatan: yup.string().required("Mohon diisi"),
   });
 
   const formik = useFormik({
     initialValues: {
-      jabatan_nama: data.jabatan_nama,
-      jabatan_status: data.jabatan_status,
+      nama_jabatan: data.jabatan_nama,
     },
     validationSchema: validationSchema,
     onSubmit: async (values) => {
@@ -165,13 +173,8 @@ const FormField = observer(({ data, formRef }) => {
   });
 
   const createNew = async (value) => {
-    console.log("new", value);
-    const cn = await Post("/jabatan/insert", {
-      ...value,
-      nama_jabatan: value.jabatan_nama,
-    });
+    const cn = await Post("/jabatan/insert", value);
 
-    console.log("new", cn);
     if (cn) {
       toast.show("Berhasil", "Input Data Berhasil", "SUCCESS");
     } else {
@@ -180,11 +183,25 @@ const FormField = observer(({ data, formRef }) => {
   };
 
   const updateData = async (value) => {
-    console.log("update", value);
+    const cn = await Post("/jabatan/update", { id: data.id, ...value });
+
+    if (cn) {
+      toast.show("Berhasil", "Update Data Berhasil", "SUCCESS");
+    } else {
+      toast.show("Gagal", "Update Data Gagal", "ERROR");
+    }
   };
 
-  const deleteData = async (value) => {
-    console.log("delete", value);
+  const deleteData = async () => {
+    const cn = await Post("/jabatan/delete", {
+      id: data.id,
+    });
+
+    if (cn) {
+      toast.show("Berhasil", "Hapus Data Berhasil", "SUCCESS");
+    } else {
+      toast.show("Gagal", "Hapus Data Gagal", "ERROR");
+    }
   };
 
   const submitEvent = async (type, value) => {
@@ -208,42 +225,20 @@ const FormField = observer(({ data, formRef }) => {
     >
       <TextField
         label="Nama jabatan *"
-        name="jabatan_nama"
+        name="nama_jabatan"
         variant="outlined"
         color="primary"
         fullWidth
-        value={formik.values.jabatan_nama}
+        value={formik.values.nama_jabatan}
         onChange={formik.handleChange}
         error={
-          formik.touched.jabatan_nama && Boolean(formik.errors.jabatan_nama)
+          formik.touched.nama_jabatan && Boolean(formik.errors.nama_jabatan)
         }
-        helperText={formik.touched.jabatan_nama && formik.errors.jabatan_nama}
+        helperText={formik.touched.nama_jabatan && formik.errors.nama_jabatan}
         sx={{ my: 1, mr: 1, width: { laptop: "45%", mobile: "90%" } }}
       />
-      <FormControl
-        fullWidth
-        sx={{ my: 1, mr: 1, width: { laptop: "45%", mobile: "90%" } }}
-        error={
-          formik.touched.jabatan_status && Boolean(formik.errors.jabatan_status)
-        }
-      >
-        <InputLabel id="demo-simple-select-helper-label">Status *</InputLabel>
-        <Select
-          labelId="demo-simple-select-helper-label"
-          label="Status *"
-          name="jabatan_status"
-          value={formik.values.jabatan_status}
-          onChange={formik.handleChange}
-          color="primary"
-        >
-          <MenuItem value={0}>Non Aktif</MenuItem>
-          <MenuItem value={1}>Aktif</MenuItem>
-        </Select>
-        <FormHelperText>
-          {formik.touched.jabatan_status && formik.errors.jabatan_status}
-        </FormHelperText>
-      </FormControl>
-      <Button sx={{ display: "none" }} type="submit" ref={formRef} />
+      <Button sx={{ display: "none" }} type="submit" ref={formRef.form} />
+      <Button sx={{ display: "none" }} ref={formRef.del} onClick={deleteData} />
     </Box>
   );
 });
