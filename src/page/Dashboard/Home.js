@@ -12,6 +12,9 @@ export default observer(() => {
         </Typography>
       </Box>
       <Divider />
+      <Typography variant="body2" sx={{ mt: 2, fontWeight: "lighter" }}>
+        Quick Access
+      </Typography>
       <Box
         sx={{ display: "flex", flexDirection: "row", my: 2, overflowX: "auto" }}
       >

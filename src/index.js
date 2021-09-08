@@ -4,6 +4,7 @@ import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import "utils/global";
+import "utils/store";
 import "component/Show/Loading";
 import "component/Show/Alert";
 import "component/Show/Toast";

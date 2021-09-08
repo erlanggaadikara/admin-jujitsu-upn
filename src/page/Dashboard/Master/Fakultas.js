@@ -7,6 +7,7 @@ import {
   Button,
   IconButton,
   useMediaQuery,
+  Tooltip,
 } from "@material-ui/core";
 import { DataGrid } from "@mui/x-data-grid";
 import { Get, Post } from "utils/api";
@@ -14,13 +15,22 @@ import { useEffect, useState, useRef } from "react";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { LoadingButton } from "@material-ui/lab";
-import { Save, ArrowBack, Add, Delete } from "@material-ui/icons";
+import {
+  Save,
+  ArrowBack,
+  Add,
+  Delete,
+  AccessTimeSharp,
+} from "@material-ui/icons";
+
+const KEY = "Fakultas";
 
 export default observer(() => {
   const isMobile = useMediaQuery("(max-width:640px)");
   const meta = useLocalObservable(() => ({
     value: "",
     saving: false,
+    quickAccess: false,
     load: true,
   }));
   const [columns, setColumns] = useState([]);
@@ -28,6 +38,10 @@ export default observer(() => {
 
   const form = useRef(null);
   const del = useRef(null);
+
+  const quickAccess = action(() => {
+    meta.quickAccess = window.global.quickAccess(KEY);
+  });
 
   useEffect(() => {
     const fetch = async () => {
@@ -49,6 +63,10 @@ export default observer(() => {
         });
       }
     };
+
+    runInAction(() => {
+      meta.quickAccess = window.global.checkQuickAccess(KEY);
+    });
 
     const interval = setInterval(fetch, 3000);
     return () => clearInterval(interval);
@@ -75,6 +93,14 @@ export default observer(() => {
         <Typography variant="h5" sx={{ my: 2 }}>
           Fakultas
         </Typography>
+        <Tooltip title={`Quick Access ${meta.quickAccess ? "On" : "Off"}`}>
+          <IconButton onClick={quickAccess}>
+            <AccessTimeSharp
+              color={meta.quickAccess ? "primary" : ""}
+              fontSize="small"
+            />
+          </IconButton>
+        </Tooltip>
         {meta.value ? (
           <Box
             sx={{
@@ -99,7 +125,7 @@ export default observer(() => {
             >
               {isMobile ? "" : "Simpan"}
             </LoadingButton>
-            {/* {meta.value.type !== "new" && (
+            {meta.value.type !== "new" && (
               <Button
                 variant="contained"
                 color="error"
@@ -107,16 +133,14 @@ export default observer(() => {
                 sx={{ my: 2, px: { laptop: 4 }, mr: 1 }}
                 type="button"
                 startIcon={<Delete />}
-                onClick={() => {
+                onClick={action(() => {
                   del.current && del.current.click();
-                  runInAction(() => {
-                    meta.value = "";
-                  });
-                }}
+                  meta.value = "";
+                })}
               >
                 {isMobile ? "" : "Hapus"}
               </Button>
-            )} */}
+            )}
           </Box>
         ) : (
           <Box

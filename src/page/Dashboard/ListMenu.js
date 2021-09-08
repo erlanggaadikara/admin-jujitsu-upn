@@ -20,14 +20,20 @@ export const menu = [
     component: lazy(() => import("page/Dashboard/Home")),
   },
   {
-    name: "Member",
-    path: "/Member",
-    component: lazy(() => import("page/Dashboard/Member")),
-  },
-  {
-    name: "Kepengurusan",
-    path: "/Kepengurusan",
-    component: lazy(() => import("page/Dashboard/Kepengurusan")),
+    name: "Organisasi",
+    path: "/Organisasi",
+    child: [
+      {
+        name: "Member",
+        path: "/Member",
+        component: lazy(() => import("page/Dashboard/Organisasi/Member")),
+      },
+      {
+        name: "Kepengurusan",
+        path: "/Kepengurusan",
+        component: lazy(() => import("page/Dashboard/Organisasi/Kepengurusan")),
+      },
+    ],
   },
   {
     name: "Master",
@@ -50,6 +56,17 @@ export const menu = [
       },
     ],
   },
+  {
+    name: "Setting",
+    path: "/Setting",
+    child: [
+      {
+        name: "User",
+        path: "/User",
+        component: lazy(() => import("page/Dashboard/Setting/User")),
+      },
+    ],
+  },
 ];
 
 export default observer(({ closeDrawer }) => {
@@ -67,74 +84,66 @@ export default observer(({ closeDrawer }) => {
     });
   }, []);
   return (
-    <>
-      <List>
-        <Box
-          sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}
-        >
-          <img src="asset/image/favicon.png" alt="logo" width={60} />
-          <Typography variant="h5">GoAdmin</Typography>
-        </Box>
-        {menu.map((item) => {
-          if (item.child) {
-            return (
-              <>
-                <ListItem
-                  button
-                  onClick={() => {
-                    runInAction(() => {
-                      meta.open[item.name] = !meta.open[item.name];
-                    });
-                  }}
-                >
-                  <ListItemText primary={item.name} />
-                  {meta.open[item.name] ? <ExpandLess /> : <ExpandMore />}
-                </ListItem>
-                <Collapse
-                  in={meta.open[item.name]}
-                  timeout="auto"
-                  unmountOnExit
-                >
-                  <List component="div" disablePadding>
-                    {item.child.map((val) => (
-                      <ListItem
-                        sx={{ pl: 4 }}
-                        button
-                        onClick={() => {
-                          navigate("/Dashboard" + item.path + val.path);
-                          closeDrawer();
-                        }}
-                      >
-                        <ListItemText primary={val.name} />
-                      </ListItem>
-                    ))}
-                  </List>
-                </Collapse>
-              </>
-            );
-          } else {
-            return (
+    <List>
+      <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
+        <img src="asset/image/favicon.png" alt="logo" width={60} />
+        <Typography variant="h5">GoAdmin</Typography>
+      </Box>
+      {menu.map((item) => {
+        if (item.child) {
+          return (
+            <>
               <ListItem
                 button
                 onClick={() => {
-                  navigate("/Dashboard" + item.path);
-                  closeDrawer();
+                  runInAction(() => {
+                    meta.open[item.name] = !meta.open[item.name];
+                  });
                 }}
               >
                 <ListItemText primary={item.name} />
+                {meta.open[item.name] ? <ExpandLess /> : <ExpandMore />}
               </ListItem>
-            );
-          }
-        })}
-        <ListItem
-          button
-          onClick={() => {
-            navigate("/", { replace: true });
-          }}
-        >
-          <ListItemText>Logout</ListItemText>
-        </ListItem>
-      </List>
-    </>
+              <Collapse in={meta.open[item.name]} timeout="auto" unmountOnExit>
+                <List component="div" disablePadding>
+                  {item.child.map((val) => (
+                    <ListItem
+                      sx={{ pl: 4 }}
+                      button
+                      onClick={() => {
+                        navigate("/Dashboard" + item.path + val.path);
+                        closeDrawer();
+                      }}
+                    >
+                      <ListItemText primary={val.name} />
+                    </ListItem>
+                  ))}
+                </List>
+              </Collapse>
+            </>
+          );
+        } else {
+          return (
+            <ListItem
+              button
+              onClick={() => {
+                navigate("/Dashboard" + item.path);
+                closeDrawer();
+              }}
+            >
+              <ListItemText primary={item.name} />
+            </ListItem>
+          );
+        }
+      })}
+      <ListItem
+        button
+        onClick={() => {
+          navigate("/", { replace: true });
+        }}
+      >
+        <ListItemText>Logout</ListItemText>
+      </ListItem>
+    </List>
   );
 });

@@ -98,7 +98,7 @@ export default observer(() => {
             >
               {isMobile ? "" : "Simpan"}
             </LoadingButton>
-            {/* {meta.value.type !== "new" && (
+            {meta.value.type !== "new" && (
               <Button
                 variant="contained"
                 color="error"
@@ -106,11 +106,14 @@ export default observer(() => {
                 sx={{ my: 2, px: 4, mr: 1 }}
                 type="button"
                 startIcon={<Delete />}
-                onClick={() => del.current && del.current.click()}
+                onClick={action(() => {
+                  del.current && del.current.click();
+                  meta.value = "";
+                })}
               >
                 {isMobile ? "" : "Hapus"}
               </Button>
-            )} */}
+            )}
           </Box>
         ) : (
           <Box

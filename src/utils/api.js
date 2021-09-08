@@ -11,7 +11,7 @@ const csrfToken = async () => {
 };
 
 export const Get = async (url) => {
-  const send = await Axios.get(ENDPOINT + url);
+  const send = await Axios(ENDPOINT + url);
 
   if (send.data) return send.data;
   return send;
@@ -19,7 +19,6 @@ export const Get = async (url) => {
 
 export const Post = async (url, data) => {
   const csrf = await csrfToken();
-  console.log(csrf);
   const send = await Axios({
     url: ENDPOINT + url,
     method: "POST",

@@ -18,7 +18,6 @@ import { Get, Post } from "utils/api";
 import { useEffect, useState, useRef } from "react";
 import { useFormik } from "formik";
 import * as yup from "yup";
-import Spinner from "component/Spinner";
 import { toast } from "component/Show/Toast";
 import { LoadingButton } from "@material-ui/lab";
 import { Save, ArrowBack, Add, Delete } from "@material-ui/icons";
@@ -133,7 +132,10 @@ export default observer(() => {
                 sx={{ my: 2, px: 4, mr: 1 }}
                 type="button"
                 startIcon={<Delete />}
-                onClick={() => del.current && del.current.click()}
+                onClick={action(() => {
+                  del.current && del.current.click();
+                  meta.value = "";
+                })}
               >
                 {isMobile ? "" : "Hapus"}
               </Button>
