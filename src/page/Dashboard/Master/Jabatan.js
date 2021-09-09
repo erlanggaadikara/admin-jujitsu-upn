@@ -92,7 +92,6 @@ export default observer(() => {
               loading={global.saving}
               loadingPosition="start"
               onClick={() => {
-                global.saving = true;
                 form.current && form.current.click();
               }}
             >
@@ -169,6 +168,7 @@ const FormField = observer(({ data, formRef }) => {
     },
     validationSchema: validationSchema,
     onSubmit: async (values) => {
+      global.saving = true;
       await submitEvent(data.type, values);
     },
   });
@@ -194,6 +194,7 @@ const FormField = observer(({ data, formRef }) => {
   };
 
   const deleteData = async () => {
+    global.removing = true;
     const cn = await Post("/jabatan/delete", {
       id: data.id,
     });
@@ -203,6 +204,7 @@ const FormField = observer(({ data, formRef }) => {
     } else {
       window.toast.show("Gagal", "Hapus Data Gagal", "ERROR");
     }
+    global.removing = true;
   };
 
   const submitEvent = async (type, value) => {

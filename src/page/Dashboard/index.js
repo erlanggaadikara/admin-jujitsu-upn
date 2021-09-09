@@ -9,10 +9,11 @@ import {
   useMediaQuery,
 } from "@material-ui/core";
 import MenuIcon from "@material-ui/icons/Menu";
-import { Router } from "@reach/router";
+import { Router, navigate } from "@reach/router";
 import ListMenu, { menu } from "./ListMenu";
-import { createElement } from "react";
+import { createElement, useEffect } from "react";
 import Container from "component/Container";
+import store from "utils/store";
 
 export default observer(() => {
   const isMobile = useMediaQuery("(max-width:640px)");
@@ -20,6 +21,13 @@ export default observer(() => {
     openDrawer: false,
     container: window !== undefined ? () => window.document.body : undefined,
   }));
+
+  useEffect(() => {
+    if (!store.view("session")) {
+      navigate("/", { replace: true });
+    }
+    window.session = store.view("session");
+  }, []);
 
   return (
     <Box sx={{ display: "flex" }}>

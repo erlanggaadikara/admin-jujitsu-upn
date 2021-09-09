@@ -1,12 +1,16 @@
-import { observer, useLocalObservable } from "mobx-react-lite";
-import { action, runInAction } from "mobx";
+import { observer } from "mobx-react-lite";
 import { useFormik } from "formik";
+import { Post } from "utils/api";
 import * as yup from "yup";
-import { Box, Button, TextField, Typography } from "@material-ui/core";
+import { Box, TextField, Typography } from "@material-ui/core";
+import { LoadingButton } from "@material-ui/lab";
 import Container from "component/Container";
 import { navigate } from "@reach/router";
+import { useState } from "react";
 
 export default observer(() => {
+  const [login, setLogin] = useState(false);
+
   const validationSchema = yup.object({
     username: yup.string().required("Mohon diisi"),
     password: yup.string().required("Mohon diisi"),
@@ -18,9 +22,19 @@ export default observer(() => {
       password: "",
     },
     validationSchema,
-    onSubmit: (value) => {
-      console.log(value);
-      navigate("/Dashboard", { replace: true });
+    onSubmit: async (value) => {
+      setLogin(true);
+      const login = await Post("/login_user", value);
+      console.log(login);
+      if (login.status === 1) {
+        window.store.set("session", login.data);
+        window.session = login.data;
+        setLogin(false);
+        navigate("/Dashboard", { replace: true });
+      } else {
+        window.toast.show("Gagal", login.message, "ERROR");
+      }
+      setLogin(false);
     },
   });
 
@@ -68,15 +82,16 @@ export default observer(() => {
             helperText={formik.touched.password && formik.errors.password}
             sx={{ my: 1 }}
           />
-          <Button
+          <LoadingButton
             variant="contained"
             color="primary"
             size="large"
+            loading={login}
             sx={{ mt: 5, px: 10, mb: 5 }}
             type="submit"
           >
             Login
-          </Button>
+          </LoadingButton>
         </Box>
       </Box>
     </Container>

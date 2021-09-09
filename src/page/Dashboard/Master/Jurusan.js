@@ -28,7 +28,7 @@ import {
   AccessTimeSharp,
 } from "@material-ui/icons";
 
-const KEY = "Jurusan";
+const KEY = "/Master/Jurusan";
 
 export default observer(() => {
   const isMobile = useMediaQuery("(max-width:640px)");
@@ -96,19 +96,21 @@ export default observer(() => {
           alignItems: "center",
         }}
       >
-        {meta.value && (
-          <IconButton
-            aria-label="back"
-            onClick={action(() => (meta.value = ""))}
-          >
-            <ArrowBack />
-          </IconButton>
-        )}
+        <IconButton
+          aria-label="back"
+          sx={{ display: !meta.value && "none" }}
+          onClick={action(() => (meta.value = ""))}
+        >
+          <ArrowBack />
+        </IconButton>
         <Typography variant="h5" sx={{ my: 2 }}>
           Jurusan
         </Typography>
         <Tooltip title={`Quick Access ${meta.quickAccess ? "On" : "Off"}`}>
-          <IconButton onClick={quickAccess}>
+          <IconButton
+            onClick={quickAccess}
+            sx={{ display: meta.value && "none" }}
+          >
             <AccessTimeSharp
               color={meta.quickAccess ? "primary" : ""}
               fontSize="small"
@@ -133,7 +135,6 @@ export default observer(() => {
               loading={global.saving}
               loadingPosition="start"
               onClick={() => {
-                global.saving = true;
                 form.current && form.current.click();
               }}
             >
@@ -215,6 +216,7 @@ const FormField = observer(({ data, formRef }) => {
     },
     validationSchema: validationSchema,
     onSubmit: async (values) => {
+      global.saving = true;
       await submitEvent(data.type, values);
     },
   });

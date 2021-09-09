@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
+import "draft-js/dist/Draft.css";
 import "utils/global";
 import "utils/store";
 import "component/Show/Loading";

@@ -1,14 +1,15 @@
 import { observer } from "mobx-react-lite";
-import { Box, Link, Typography, Divider } from "@material-ui/core";
+import { Box, Typography, Divider, Button } from "@material-ui/core";
 import { menu } from "./ListMenu";
-import { navigate } from "@reach/router";
+import { navigate, Link } from "@reach/router";
 
 export default observer(() => {
+  const quick = window.store.view("Quick");
   return (
     <Box sx={{ display: "flex", flexDirection: "column", flex: 1 }}>
       <Box sx={{ display: "flex", flexDirection: "row" }}>
         <Typography variant="h6" sx={{ my: 2 }}>
-          Halo Erlangga, Alumni UPN Veteran Jawa Timur
+          Halo {window.session.username}, {window.session.title}
         </Typography>
       </Box>
       <Divider />
@@ -16,30 +17,18 @@ export default observer(() => {
         Quick Access
       </Typography>
       <Box
+        flexWrap="wrap"
         sx={{ display: "flex", flexDirection: "row", my: 2, overflowX: "auto" }}
       >
-        {menu.map(
-          (item) =>
-            item.component && (
-              <Link href={"/Dashboard" + item.path}>
-                <Box
-                  sx={{
-                    border: 1,
-                    borderRadius: 1,
-                    borderColor: "primary.main",
-                    width: 200,
-                    height: 200,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    m: 1,
-                  }}
-                >
-                  <Typography variant="h6">{item.name}</Typography>
-                </Box>
-              </Link>
-            )
-        )}
+        {Array.isArray(quick) &&
+          quick.map((item) => {
+            const str = item.split("/");
+            return (
+              <Button onClick={() => navigate("/Dashboard" + item)}>
+                {`${str[1]} ${str[2] || ""}`}
+              </Button>
+            );
+          })}
       </Box>
     </Box>
   );

@@ -20,6 +20,11 @@ export const menu = [
     component: lazy(() => import("page/Dashboard/Home")),
   },
   {
+    name: "Blog",
+    path: "/Blog",
+    component: lazy(() => import("page/Dashboard/Blog")),
+  },
+  {
     name: "Organisasi",
     path: "/Organisasi",
     child: [
@@ -139,6 +144,8 @@ export default observer(({ closeDrawer }) => {
       <ListItem
         button
         onClick={() => {
+          window.store.remove("session");
+          window.session = "";
           navigate("/", { replace: true });
         }}
       >

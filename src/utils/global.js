@@ -3,10 +3,12 @@ import store from "./store";
 
 class Global {
   saving = false;
+  removing = false;
 
   constructor() {
     makeObservable(this, {
       saving: observable,
+      removing: observable,
       quickAccess: action,
     });
   }
