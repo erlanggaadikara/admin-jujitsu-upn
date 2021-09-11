@@ -1,5 +1,5 @@
 import { observer, useLocalObservable } from "mobx-react-lite";
-import { action, runInAction } from "mobx";
+import { action, runInAction, toJS } from "mobx";
 import {
   Box,
   Typography,
@@ -278,9 +278,10 @@ const FormField = observer(({ data, formRef }) => {
     validationSchema: validationSchema,
     onSubmit: async (values) => {
       global.saving = true;
+      let img = meta.image.base64 ? meta.image.base64 : "";
       await submitEvent(data.type, {
         slug: meta.slug,
-        image: meta.image.base64,
+        image: img,
         content,
         ...values,
       });
@@ -439,7 +440,8 @@ const FormField = observer(({ data, formRef }) => {
           display: "flex",
           flexDirection: "column",
           minHeight: "40vh",
-          width: "80vw",
+          maxWidth: "80vw",
+          width: "100%",
           my: 2,
         }}
       >
