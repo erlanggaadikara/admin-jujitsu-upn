@@ -12,6 +12,7 @@ import {
   MenuItem,
   IconButton,
   useMediaQuery,
+  Tooltip,
 } from "@material-ui/core";
 import { DataGrid } from "@mui/x-data-grid";
 import { Get, Post } from "utils/api";
@@ -20,19 +21,32 @@ import { useFormik } from "formik";
 import * as yup from "yup";
 import { toast } from "component/Show/Toast";
 import { LoadingButton } from "@material-ui/lab";
-import { Save, ArrowBack, Add, Delete } from "@material-ui/icons";
+import {
+  Save,
+  ArrowBack,
+  Add,
+  Delete,
+  AccessTimeSharp,
+} from "@material-ui/icons";
+
+const KEY = "/Organisasi/Kepengurusan";
 
 export default observer(() => {
   const isMobile = useMediaQuery("(max-width:640px)");
   const meta = useLocalObservable(() => ({
     value: "",
     load: true,
+    quickAccess: false,
   }));
   const [columns, setColumns] = useState([]);
   const [rows, setRows] = useState([]);
 
   const form = useRef(null);
   const del = useRef(null);
+
+  const quickAccess = action(() => {
+    meta.quickAccess = window.global.quickAccess(KEY);
+  });
 
   useEffect(() => {
     const fetch = async () => {
@@ -75,6 +89,10 @@ export default observer(() => {
       }
     };
 
+    runInAction(() => {
+      meta.quickAccess = window.global.checkQuickAccess(KEY);
+    });
+
     const interval = setInterval(fetch, 3000);
     return () => clearInterval(interval);
   }, []);
@@ -89,17 +107,27 @@ export default observer(() => {
           alignItems: "center",
         }}
       >
-        {meta.value && (
-          <IconButton
-            aria-label="back"
-            onClick={action(() => (meta.value = ""))}
-          >
-            <ArrowBack />
-          </IconButton>
-        )}
+        <IconButton
+          aria-label="back"
+          onClick={action(() => (meta.value = ""))}
+          sx={{ display: !meta.value && "none" }}
+        >
+          <ArrowBack />
+        </IconButton>
         <Typography variant="h5" sx={{ my: 2 }}>
           Kepengurusan
         </Typography>
+        <Tooltip title={`Quick Access ${meta.quickAccess ? "On" : "Off"}`}>
+          <IconButton
+            onClick={quickAccess}
+            sx={{ display: meta.value && "none" }}
+          >
+            <AccessTimeSharp
+              color={meta.quickAccess ? "primary" : ""}
+              fontSize="small"
+            />
+          </IconButton>
+        </Tooltip>
         {meta.value ? (
           <Box
             sx={{

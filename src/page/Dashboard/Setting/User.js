@@ -61,7 +61,7 @@ export default observer(() => {
         ];
 
         setColumns([...columns]);
-        setRows([...user]);
+        setRows([...user].filter((x) => x.user_name !== "dev"));
 
         runInAction(() => {
           meta.load = false;

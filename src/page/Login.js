@@ -6,7 +6,8 @@ import { Box, TextField, Typography } from "@material-ui/core";
 import { LoadingButton } from "@material-ui/lab";
 import Container from "component/Container";
 import { navigate } from "@reach/router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import store from "utils/store";
 
 export default observer(() => {
   const [login, setLogin] = useState(false);
@@ -25,7 +26,6 @@ export default observer(() => {
     onSubmit: async (value) => {
       setLogin(true);
       const login = await Post("/login_user", value);
-      console.log(login);
       if (login.status === 1) {
         window.store.set("session", login.data);
         window.session = login.data;
@@ -37,6 +37,12 @@ export default observer(() => {
       setLogin(false);
     },
   });
+
+  useEffect(() => {
+    if (window.session || store.view("session")) {
+      navigate("/Dashboard", { replace: true });
+    }
+  }, []);
 
   return (
     <Container>
