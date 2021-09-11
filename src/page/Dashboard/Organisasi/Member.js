@@ -21,6 +21,7 @@ import * as yup from "yup";
 import { toast } from "component/Show/Toast";
 import { LoadingButton, MobileDatePicker } from "@material-ui/lab";
 import { Save, ArrowBack, Add, Delete } from "@material-ui/icons";
+import { setLocalDate } from "utils/format";
 
 export default observer(() => {
   const isMobile = useMediaQuery("(max-width:640px)");
@@ -260,7 +261,14 @@ const FormField = observer(({ data, formRef }) => {
     },
     validationSchema: validationSchema,
     onSubmit: async (values) => {
-      await submitEvent(data.type, values);
+      console.log({
+        ...values,
+        tanggallahir: setLocalDate(values.tanggallahir),
+      });
+      await submitEvent(data.type, {
+        ...values,
+        tanggallahir: setLocalDate(values.tanggallahir),
+      });
     },
   });
 

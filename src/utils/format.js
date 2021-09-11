@@ -25,3 +25,12 @@ export const formatDate = (date) => {
     humanized
   );
 };
+
+export const setLocalDate = (date) => {
+  const d = date ? new Date(date) : new Date();
+
+  return `${d.getFullYear()}-${`${d.getMonth() + 1}`.padStart(
+    2,
+    0
+  )}-${`${d.getDate()}`.padStart(2, 0)}`;
+};
