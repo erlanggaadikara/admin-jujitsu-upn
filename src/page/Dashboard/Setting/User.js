@@ -72,10 +72,8 @@ export default observer(() => {
     runInAction(() => {
       meta.quickAccess = window.global.checkQuickAccess(KEY);
     });
-
-    const interval = setInterval(fetch, 3000);
-    return () => clearInterval(interval);
-  }, []);
+    fetch();
+  }, [meta.value]);
 
   return (
     <Box sx={{ height: "90vh", display: "flex", flexDirection: "column" }}>
