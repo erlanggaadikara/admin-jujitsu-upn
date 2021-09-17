@@ -1,5 +1,5 @@
 import { observer, useLocalObservable } from "mobx-react-lite";
-import { action, observable, runInAction } from "mobx";
+import { action, observable, runInAction, toJS } from "mobx";
 import {
   Box,
   Typography,
@@ -29,6 +29,8 @@ import {
   AccessTimeSharp,
 } from "@material-ui/icons";
 import { setLocalDate } from "utils/format";
+import UploadImage from "component/UploadImage";
+import { toBase64, base64Image } from "utils/formatFile";
 
 const KEY = "/Organisasi/Member";
 
@@ -96,7 +98,7 @@ export default observer(() => {
           },
           {
             field: "member_nohp",
-            headerName: "Tanggal Lahir",
+            headerName: "No HP/Whatsapp",
             minWidth: 300,
           },
           {
@@ -120,6 +122,13 @@ export default observer(() => {
             headerName: "Status Pelatih",
             minWidth: 300,
             valueGetter: (params) => (params.value == 0 ? "" : "Pelatih"),
+          },
+          {
+            field: "member_valid",
+            headerName: "Status ",
+            minWidth: 300,
+            valueGetter: (params) =>
+              params.value == 0 ? "Belum Valid" : "Valid",
           },
         ];
 
@@ -257,6 +266,7 @@ export default observer(() => {
 const FormField = observer(({ data, formRef }) => {
   const meta = useLocalObservable(() => ({
     jurusan: [],
+    image: data.member_foto || "",
   }));
   const validationSchema = yup.object({
     email: yup.string().email().required("Mohon diisi"),
@@ -285,15 +295,15 @@ const FormField = observer(({ data, formRef }) => {
       otw_nohp: data.member_otw_nohp || "",
       status_alumni: data.member_status_alumni || 0,
       status_pelatih: data.member_status_pelatih || 0,
+      valid: data.member_status_valid || 0,
     },
     validationSchema: validationSchema,
     onSubmit: async (values) => {
-      console.log({
-        ...values,
-        tanggallahir: setLocalDate(values.tanggallahir),
-      });
+      global.saving = true;
+      let img = meta.image.base64 ? meta.image.base64 : "";
       await submitEvent(data.type, {
         ...values,
+        foto: img,
         tanggallahir: setLocalDate(values.tanggallahir),
       });
     },
@@ -345,6 +355,27 @@ const FormField = observer(({ data, formRef }) => {
     }
     global.saving = false;
   };
+
+  const setFileToUpload = action((e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const type = file.type != "" ? file.type : null;
+      const fmtFile = type.split("/");
+      if (["png", "jpg", "jpeg"].includes(fmtFile[1])) {
+        toBase64(file).then(
+          action((result) => {
+            let respon = result.split(",");
+            meta.image = {
+              file: respon && respon[1] ? base64Image(type, respon[1]) : "",
+              base64: respon[1],
+            };
+          })
+        );
+      } else {
+        window.toast.show("Gagal", "Format file tidak didukung", "ERROR");
+      }
+    }
+  });
 
   useEffect(() => {
     const fetch = async () => {
@@ -540,6 +571,33 @@ const FormField = observer(({ data, formRef }) => {
           <MenuItem value={1}>Pelatih</MenuItem>
         </Select>
       </FormControl>
+      <FormControl
+        fullWidth
+        sx={{ my: 1, mr: 1, width: { laptop: "45%", mobile: "90%" } }}
+      >
+        <InputLabel id="demo-simple-select-helper-label">Status</InputLabel>
+        <Select
+          labelId="demo-simple-select-helper-label"
+          label="Status"
+          name="valid"
+          value={formik.values.valid}
+          onChange={formik.handleChange}
+          color="primary"
+        >
+          <MenuItem value={0}>Belum Valid</MenuItem>
+          <MenuItem value={1}>Valid</MenuItem>
+        </Select>
+      </FormControl>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          my: 2,
+        }}
+      >
+        <Typography variant="h6">Foto</Typography>
+        <UploadImage src={meta.image} onChange={setFileToUpload} />
+      </Box>
       <Button sx={{ display: "none" }} type="submit" ref={formRef.form} />
       <Button sx={{ display: "none" }} ref={formRef.del} onClick={deleteData} />
     </Box>

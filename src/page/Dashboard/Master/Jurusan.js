@@ -222,7 +222,6 @@ const FormField = observer(({ data, formRef }) => {
 
   const createNew = async (value) => {
     const cn = await Post("/jurusan/insert", value);
-    console.log(cn);
 
     if (cn) {
       window.toast.show("Berhasil", "Input Data Berhasil", "SUCCESS");
